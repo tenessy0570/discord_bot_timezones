@@ -30,7 +30,7 @@ def _get_song_name_from_message(message):
     parsed_msg = message.content.split(' ')
     if len(parsed_msg) == 1:
         raise NameError("Song name can't be empty!")
-    return ''.join(message.content.split(' ')[1:])
+    return ''.join(parsed_msg[1:])
 
 
 def _get_movie_id(videos_search):
