@@ -1,3 +1,4 @@
+import discord
 from youtubesearchpython import VideosSearch
 
 
@@ -46,3 +47,11 @@ def get_video_url_by_song_name(message):
     videos_search = VideosSearch(song_name, limit=1)
     video_id = _get_movie_id(videos_search)
     return url + video_id
+
+
+def get_image(url):
+    return discord.Embed().set_image(url=url)
+
+
+def get_commands_list_to_send(self):
+    return "Available commands: \n" + self._help_commands_for_output
