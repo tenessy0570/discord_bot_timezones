@@ -6,7 +6,7 @@ def on_ready_print(self):
     print("---------")
 
 
-async def receive_message_then_send(message, received: str, to_send="") -> None:
+async def receive_message_then_send(message, received: str, to_send=""):
     if message.content == received:
         if to_send:
             await message.channel.send(to_send)
