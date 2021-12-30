@@ -28,11 +28,11 @@ def message_is_song_name(message):
 
 def _get_song_name_from_message(message):
     parsed_msg_list = message.content.split(' ')
+    song_name = ' '.join(parsed_msg_list[1:])
 
-    if len(parsed_msg_list) == 1:
+    if not song_name:
         raise NameError("Song name can't be empty!")
 
-    song_name = ''.join(parsed_msg_list[1:])
     return song_name
 
 
