@@ -3,11 +3,11 @@ from os import environ
 import environment_vars
 from decorators import author_is_not_bot
 from img_urls import good_face_url
-from utils import on_ready_print, receive_message_then_send
+from utils import on_ready_print, receive_message_then_send, get_commands_from_file
 
 
 class MyClient(discord.Client):
-    _help_commands = ['face', 'ping']
+    _help_commands = get_commands_from_file("commands_list_divided_with_newline")
     _help_commands_for_output = ('~ ' + command for command in _help_commands)
     _help_commands_for_output = '\n'.join(_help_commands_for_output)
 
@@ -16,7 +16,6 @@ class MyClient(discord.Client):
 
     @author_is_not_bot
     async def on_message(self, message):
-
         if await receive_message_then_send(message, "ping", "pong"):
             return
 
