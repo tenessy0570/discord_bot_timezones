@@ -1,7 +1,7 @@
 import discord
 from os import environ
 import environment_vars
-from decorators import author_is_not_bot
+from decorators import author_is_not_bot, notify_if_wrong_command
 from img_urls import good_face_url
 from utils import on_ready_print, receive_message_then_send, get_commands_from_file
 
@@ -15,6 +15,7 @@ class MyClient(discord.Client):
         on_ready_print(self)
 
     @author_is_not_bot
+    @notify_if_wrong_command
     async def on_message(self, message):
         if await receive_message_then_send(message, "ping", "pong"):
             return
@@ -33,8 +34,7 @@ class MyClient(discord.Client):
             await message.channel.send(embed=image_to_send)
             return
 
-        await message.channel.send('I cant understand you :(\nType !help for available command list')
-        return
+        return True
 
 
 bot_token = environ.get('bot_token')
