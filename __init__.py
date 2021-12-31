@@ -1,3 +1,5 @@
+import unicodedata
+
 import environment_vars
 import discord
 from os import environ
@@ -20,7 +22,7 @@ from utils import (
     get_reaction_info,
     create_message_and_add_reactions,
     create_and_get_roles_dict,
-    get_roles_for_send
+    get_roles_for_send, get_role_from_payload, reacted_user_is_bot, get_on_delete_content
 )
 
 
@@ -99,21 +101,22 @@ class MyClient(discord.Client):
         if not await in_bot_channel(message=message):
             return
 
-        message_content = f'"{message.content}"' \
-            if not await is_embed(message) \
-            else 'just an embed or an image.'
+        message_content = await get_on_delete_content(message)
 
         await message.channel.send(
             f"{message.author.mention}'s message has just been deleted which was {message_content}"
         )
 
     async def on_raw_reaction_add(self, payload):
+        if await reacted_user_is_bot(self, payload):
+            return
+
         channel = self.get_channel(payload.channel_id)
         if await in_bot_channel(channel=channel):
             return
 
-        emoji, reacted_user, message_id = await get_reaction_info(payload)
-        message = await get_message_by_id(channel, message_id)
+        role = await get_role_from_payload(self, payload, channel)
+        await payload.member.add_roles(role)
 
 
 bot_token = environ.get('bot_token')

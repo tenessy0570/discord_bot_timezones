@@ -95,7 +95,7 @@ def create_and_get_roles_dict(_emojis):
     _roles = {}
 
     for key, i in zip(_emojis, range(1, len(_emojis) + 1)):
-        _roles[key] = f"Role {i}"
+        _roles[_emojis[key]] = f"Role {i}"
 
     return _roles
 
@@ -105,3 +105,21 @@ def get_roles_for_send(_roles):
     for key, value in _roles.items():
         roles += f"{key} ~ @{value}\n"
     return roles
+
+
+async def get_role_from_payload(self, payload, channel):
+    emoji, reacted_user, message_id = await get_reaction_info(payload)
+    guild = channel.guild
+    emoji = emoji.name.lower()
+    role = discord.utils.get(guild.roles, name=self._roles[emoji])
+    return role
+
+
+async def reacted_user_is_bot(self, payload):
+    return payload.member == self.user
+
+
+async def get_on_delete_content(message):
+    return f'"{message.content}"' \
+            if not await is_embed(message) \
+            else 'just an embed or an image.'
