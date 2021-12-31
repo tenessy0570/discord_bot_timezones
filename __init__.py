@@ -12,8 +12,10 @@ from utils import (
     get_commands_from_file,
     message_is_song_name,
     get_video_url_by_song_name,
-    get_image,
-    get_commands_list_to_send
+    get_embed,
+    get_commands_list_to_send,
+    is_embed,
+    in_bot_channel
 )
 
 
@@ -28,11 +30,14 @@ class MyClient(discord.Client):
     @author_is_not_bot
     @notify_if_wrong_command
     async def on_message(self, message):
+        if not in_bot_channel(message=message):
+            return
+
         if await receive_message_then_send(message, "ping", "pong"):
             return
 
         if await receive_message_then_send(message, "avatar"):
-            image_to_send = get_image(self.user.avatar_url)
+            image_to_send = get_embed(self.user.avatar_url)
             await message.channel.send(embed=image_to_send)
             return
 
@@ -46,7 +51,7 @@ class MyClient(discord.Client):
             return
 
         if await receive_message_then_send(message, "face"):
-            image_to_send = get_image(url=good_face_url)
+            image_to_send = get_embed(url=good_face_url)
             await message.channel.send(embed=image_to_send)
             return
 
@@ -62,6 +67,23 @@ class MyClient(discord.Client):
             return
 
         return True
+
+    async def on_typing(self, channel, user, when):
+        if not in_bot_channel(channel=channel):
+            return
+
+        await channel.send(f"{user.mention} started typing something on {when}. I saw it!")
+
+    async def on_message_delete(self, message):
+        if not in_bot_channel(message=message):
+            return
+
+        message_content = f'"{message.content}"' \
+            if not is_embed(message) \
+            else 'just an embed or an image.'
+        await message.channel.send(
+            f"{message.author.mention}'s message has just been deleted which was {message_content}"
+        )
 
 
 bot_token = environ.get('bot_token')

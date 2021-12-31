@@ -49,9 +49,19 @@ def get_video_url_by_song_name(message):
     return url + video_id
 
 
-def get_image(url):
+def get_embed(url):
     return discord.Embed().set_image(url=url)
 
 
 def get_commands_list_to_send(self):
     return "Available commands: \n" + self._help_commands_for_output
+
+
+def is_embed(message):
+    return message.content == ""
+
+
+def in_bot_channel(channel=None, message=None):
+    if message:
+        channel = message.channel
+    return channel.name == 'bot'
