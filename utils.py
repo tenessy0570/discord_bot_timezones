@@ -84,8 +84,8 @@ async def get_reaction_info(payload):
     return payload.emoji, payload.member, payload.message_id
 
 
-async def create_message_and_add_reactions(self, _channel):
-    message = await _channel.send(self._roles_for_send)
+async def create_message_and_add_reactions(self, _channel, _roles_for_send):
+    message = await _channel.send(_roles_for_send)
     for key in self._emojis:
         await message.add_reaction(emoji=self._emojis[key])
 
@@ -99,11 +99,17 @@ def create_and_get_roles_dict(_emojis):
     return _roles
 
 
-def get_roles_for_send(_roles):
+async def get_roles_for_send(self):
     roles = ""
-    for key, value in _roles.items():
-        roles += f"{key} ~ @{value}\n"
+    for key, value in self._roles.items():
+        role_name = value
+        role = await _get_role_by_name(self, role_name)
+        roles += f"{key} ~ <@&{role.id}>\n"
     return roles
+
+
+async def _get_role_by_name(self, name):
+    return discord.utils.get(self.guilds[0].roles, name=name)
 
 
 async def get_role_from_payload(self, payload, channel):
