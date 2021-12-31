@@ -37,7 +37,8 @@ async def _get_song_name_from_message(message):
     return song_name
 
 
-async def _get_movie_id(videos_search):
+async def _get_movie_id(song_name):
+    videos_search = VideosSearch(song_name, limit=1)
     return videos_search.result()['result'][0]['id']
 
 
@@ -45,13 +46,11 @@ async def get_video_url_by_song_name(message):
     url = 'https://www.youtube.com/watch?v='
     song_name = await _get_song_name_from_message(message)
 
-    if song_name:
-        videos_search = VideosSearch(song_name, limit=1)
-    else:
+    if not song_name:
         raise NameError
 
     try:
-        video_id = await _get_movie_id(videos_search)
+        video_id = await _get_movie_id(song_name)
     except IndexError:
         raise NameError
 
