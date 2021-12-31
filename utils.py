@@ -82,3 +82,10 @@ async def get_message_by_id(channel, message_id):
 
 async def get_reaction_info(payload):
     return payload.emoji, payload.member, payload.message_id
+
+
+async def create_message_and_add_reactions(self, _channel):
+    message = await _channel.send("Loaded")
+    await message.add_reaction(emoji=self._role_1)
+    await message.add_reaction(emoji=self._role_2)
+    await message.add_reaction(emoji=self._role_3)

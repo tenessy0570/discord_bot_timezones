@@ -17,7 +17,8 @@ from utils import (
     is_embed,
     in_bot_channel,
     get_message_by_id,
-    get_reaction_info
+    get_reaction_info,
+    create_message_and_add_reactions
 )
 
 
@@ -26,12 +27,19 @@ class MyClient(discord.Client):
     _help_commands_for_output = ('~ ' + command for command in _help_commands)
     _help_commands_for_output = '\n'.join(_help_commands_for_output)
 
+    _role_1 = u"\U0001F970"
+    _role_2 = u"\U0001F68B"
+    _role_3 = u"\U0001F458"
+
     async def on_ready(self):
         await on_ready_print(self)
+        _channel = None
+
         for channel in self.get_all_channels():
             if channel.name == 'bot':
                 _channel = channel
-        await _channel.send("Loaded")
+
+        await create_message_and_add_reactions(self, _channel)
 
     @author_is_not_bot
     @notify_if_wrong_command
@@ -87,21 +95,18 @@ class MyClient(discord.Client):
         message_content = f'"{message.content}"' \
             if not is_embed(message) \
             else 'just an embed or an image.'
+
         await message.channel.send(
             f"{message.author.mention}'s message has just been deleted which was {message_content}"
         )
 
     async def on_raw_reaction_add(self, payload):
         channel = self.get_channel(payload.channel_id)
-        if not await in_bot_channel(channel=channel):
+        if await in_bot_channel(channel=channel):
             return
 
-        emoji, who_reacted, message_id = await get_reaction_info(payload)
+        emoji, reacted_user, message_id = await get_reaction_info(payload)
         message = await get_message_by_id(channel, message_id)
-
-        await channel.send(
-            f"{who_reacted.name} has just reacted to {message.author.name}'s message with {emoji.name}!"
-        )
 
 
 bot_token = environ.get('bot_token')
