@@ -15,7 +15,9 @@ from utils import (
     get_embed,
     get_commands_list_to_send,
     is_embed,
-    in_bot_channel
+    in_bot_channel,
+    get_message_by_id,
+    get_reaction_info
 )
 
 
@@ -25,24 +27,28 @@ class MyClient(discord.Client):
     _help_commands_for_output = '\n'.join(_help_commands_for_output)
 
     async def on_ready(self):
-        on_ready_print(self)
+        await on_ready_print(self)
+        for channel in self.get_all_channels():
+            if channel.name == 'bot':
+                _channel = channel
+        await _channel.send("Loaded")
 
     @author_is_not_bot
     @notify_if_wrong_command
     async def on_message(self, message):
-        if not in_bot_channel(message=message):
+        if not await in_bot_channel(message=message):
             return
 
         if await receive_message_then_send(message, "ping", "pong"):
             return
 
         if await receive_message_then_send(message, "avatar"):
-            image_to_send = get_embed(self.user.avatar_url)
+            image_to_send = await get_embed(self.user.avatar_url)
             await message.channel.send(embed=image_to_send)
             return
 
         if await receive_message_then_send(message, "!help"):
-            await message.channel.send(get_commands_list_to_send(self))
+            await message.channel.send(await get_commands_list_to_send(self))
             return
 
         if message.attachments:
@@ -51,16 +57,16 @@ class MyClient(discord.Client):
             return
 
         if await receive_message_then_send(message, "face"):
-            image_to_send = get_embed(url=good_face_url)
+            image_to_send = await get_embed(url=good_face_url)
             await message.channel.send(embed=image_to_send)
             return
 
-        if message_is_song_name(message):
+        if await message_is_song_name(message):
 
             try:
-                url = get_video_url_by_song_name(message)
-            except NameError as error_info:
-                await message.channel.send(error_info)
+                url = await get_video_url_by_song_name(message)
+            except (NameError, discord.errors.HTTPException):
+                await message.channel.send('Bad song name!')
                 return
 
             await message.channel.send(url)
@@ -69,13 +75,13 @@ class MyClient(discord.Client):
         return True
 
     async def on_typing(self, channel, user, when):
-        if not in_bot_channel(channel=channel):
+        if not await in_bot_channel(channel=channel):
             return
 
         await channel.send(f"{user.mention} started typing something on {when}. I saw it!")
 
     async def on_message_delete(self, message):
-        if not in_bot_channel(message=message):
+        if not await in_bot_channel(message=message):
             return
 
         message_content = f'"{message.content}"' \
@@ -83,6 +89,18 @@ class MyClient(discord.Client):
             else 'just an embed or an image.'
         await message.channel.send(
             f"{message.author.mention}'s message has just been deleted which was {message_content}"
+        )
+
+    async def on_raw_reaction_add(self, payload):
+        channel = self.get_channel(payload.channel_id)
+        if not await in_bot_channel(channel=channel):
+            return
+
+        emoji, who_reacted, message_id = await get_reaction_info(payload)
+        message = await get_message_by_id(channel, message_id)
+
+        await channel.send(
+            f"{who_reacted.name} has just reacted to {message.author.name}'s message with {emoji.name}!"
         )
 
 

@@ -2,7 +2,7 @@ import discord
 from youtubesearchpython import VideosSearch
 
 
-def on_ready_print(self):
+async def on_ready_print(self):
     print("---------")
     print("Logged as")
     print(self.user.name)
@@ -23,11 +23,11 @@ def get_commands_from_file(filename: str) -> tuple:
     return _help_commands
 
 
-def message_is_song_name(message):
+async def message_is_song_name(message):
     return message.content.split(' ')[0] == '!song'
 
 
-def _get_song_name_from_message(message):
+async def _get_song_name_from_message(message):
     parsed_msg_list = message.content.split(' ')
     song_name = ' '.join(parsed_msg_list[1:])
 
@@ -37,31 +37,48 @@ def _get_song_name_from_message(message):
     return song_name
 
 
-def _get_movie_id(videos_search):
+async def _get_movie_id(videos_search):
     return videos_search.result()['result'][0]['id']
 
 
-def get_video_url_by_song_name(message):
+async def get_video_url_by_song_name(message):
     url = 'https://www.youtube.com/watch?v='
-    song_name = _get_song_name_from_message(message)
-    videos_search = VideosSearch(song_name, limit=1)
-    video_id = _get_movie_id(videos_search)
+    song_name = await _get_song_name_from_message(message)
+
+    if song_name:
+        videos_search = VideosSearch(song_name, limit=1)
+    else:
+        raise NameError
+
+    try:
+        video_id = await _get_movie_id(videos_search)
+    except IndexError:
+        raise NameError
+
     return url + video_id
 
 
-def get_embed(url):
+async def get_embed(url):
     return discord.Embed().set_image(url=url)
 
 
-def get_commands_list_to_send(self):
+async def get_commands_list_to_send(self):
     return "Available commands: \n" + self._help_commands_for_output
 
 
-def is_embed(message):
+async def is_embed(message):
     return message.content == ""
 
 
-def in_bot_channel(channel=None, message=None):
+async def in_bot_channel(channel=None, message=None):
     if message:
         channel = message.channel
     return channel.name == 'bot'
+
+
+async def get_message_by_id(channel, message_id):
+    return await discord.GroupChannel.fetch_message(self=channel, id=message_id)
+
+
+async def get_reaction_info(payload):
+    return payload.emoji, payload.member, payload.message_id
