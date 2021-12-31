@@ -31,6 +31,11 @@ class MyClient(discord.Client):
         if await receive_message_then_send(message, "ping", "pong"):
             return
 
+        if await receive_message_then_send(message, "avatar"):
+            image_to_send = get_image(self.user.avatar_url)
+            await message.channel.send(embed=image_to_send)
+            return
+
         if await receive_message_then_send(message, "!help"):
             await message.channel.send(get_commands_list_to_send(self))
             return
