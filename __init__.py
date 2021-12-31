@@ -18,7 +18,7 @@ from utils import (
     in_bot_channel,
     get_message_by_id,
     get_reaction_info,
-    create_message_and_add_reactions
+    create_message_and_add_reactions, create_and_get_roles_dict
 )
 
 
@@ -27,15 +27,12 @@ class MyClient(discord.Client):
     _help_commands_for_output = ('~ ' + command for command in _help_commands)
     _help_commands_for_output = '\n'.join(_help_commands_for_output)
 
-    _role_1 = u"\U0001F970"
-    _role_2 = u"\U0001F68B"
-    _role_3 = u"\U0001F458"
-
     _emojis = {
         ":smiling_face_with_3_hearts:": u"\U0001F970",
         ":train:": u"\U0001F68B",
         ":kimono:": u"\U0001F458"
     }
+    _roles = create_and_get_roles_dict(_emojis)
 
     async def on_ready(self):
         await on_ready_print(self)
@@ -44,7 +41,6 @@ class MyClient(discord.Client):
         for channel in self.get_all_channels():
             if channel.name == 'bot':
                 _channel = channel
-
         await create_message_and_add_reactions(self, _channel)
 
     @author_is_not_bot
@@ -99,7 +95,7 @@ class MyClient(discord.Client):
             return
 
         message_content = f'"{message.content}"' \
-            if not is_embed(message) \
+            if not await is_embed(message) \
             else 'just an embed or an image.'
 
         await message.channel.send(

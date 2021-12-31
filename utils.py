@@ -89,3 +89,12 @@ async def create_message_and_add_reactions(self, _channel):
     await message.add_reaction(emoji=self._emojis[':smiling_face_with_3_hearts:'])
     await message.add_reaction(emoji=self._emojis[':train:'])
     await message.add_reaction(emoji=self._emojis[':kimono:'])
+
+
+def create_and_get_roles_dict(_emojis):
+    _roles = {}
+
+    for key, i in zip(_emojis, range(1, len(_emojis) + 1)):
+        _roles[f"Role {i}"] = _emojis[key]
+
+    return _roles
