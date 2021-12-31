@@ -86,6 +86,6 @@ async def get_reaction_info(payload):
 
 async def create_message_and_add_reactions(self, _channel):
     message = await _channel.send("Loaded")
-    await message.add_reaction(emoji=self._role_1)
-    await message.add_reaction(emoji=self._role_2)
-    await message.add_reaction(emoji=self._role_3)
+    await message.add_reaction(emoji=self._emojis[':smiling_face_with_3_hearts:'])
+    await message.add_reaction(emoji=self._emojis[':train:'])
+    await message.add_reaction(emoji=self._emojis[':kimono:'])

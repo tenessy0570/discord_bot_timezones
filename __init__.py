@@ -31,6 +31,12 @@ class MyClient(discord.Client):
     _role_2 = u"\U0001F68B"
     _role_3 = u"\U0001F458"
 
+    _emojis = {
+        ":smiling_face_with_3_hearts:": u"\U0001F970",
+        ":train:": u"\U0001F68B",
+        ":kimono:": u"\U0001F458"
+    }
+
     async def on_ready(self):
         await on_ready_print(self)
         _channel = None
