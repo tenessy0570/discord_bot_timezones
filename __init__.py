@@ -18,7 +18,9 @@ from utils import (
     in_bot_channel,
     get_message_by_id,
     get_reaction_info,
-    create_message_and_add_reactions, create_and_get_roles_dict
+    create_message_and_add_reactions,
+    create_and_get_roles_dict,
+    get_roles_for_send
 )
 
 
@@ -32,15 +34,18 @@ class MyClient(discord.Client):
         ":train:": u"\U0001F68B",
         ":kimono:": u"\U0001F458"
     }
+
     _roles = create_and_get_roles_dict(_emojis)
+    _roles_for_send = get_roles_for_send(_roles)
 
     async def on_ready(self):
         await on_ready_print(self)
         _channel = None
 
         for channel in self.get_all_channels():
-            if channel.name == 'bot':
+            if channel.name != 'bot':
                 _channel = channel
+
         await create_message_and_add_reactions(self, _channel)
 
     @author_is_not_bot
