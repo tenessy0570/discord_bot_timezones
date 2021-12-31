@@ -1,5 +1,3 @@
-import unicodedata
-
 import environment_vars
 import discord
 from os import environ
@@ -16,13 +14,13 @@ from utils import (
     get_video_url_by_song_name,
     get_embed,
     get_commands_list_to_send,
-    is_embed,
     in_bot_channel,
-    get_message_by_id,
-    get_reaction_info,
     create_message_and_add_reactions,
     create_and_get_roles_dict,
-    get_roles_for_send, get_role_from_payload, reacted_user_is_bot, get_on_delete_content
+    get_roles_for_send,
+    get_role_from_payload,
+    reacted_user_is_bot,
+    get_on_delete_content
 )
 
 
