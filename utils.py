@@ -79,8 +79,11 @@ async def get_message_by_id(channel, message_id):
     return await discord.GroupChannel.fetch_message(self=channel, id=message_id)
 
 
-async def get_reaction_info(payload):
-    return payload.emoji, payload.member, payload.message_id
+async def _get_reaction_info(self, payload):
+    guild = self.get_guild(payload.guild_id)
+    member = guild.get_member(payload.user_id)
+    print(member.name)
+    return payload.emoji, member, payload.message_id
 
 
 async def create_message_and_add_reactions(self, _channel, _roles_for_send):
@@ -112,7 +115,7 @@ async def _get_role_by_name(self, name):
 
 
 async def get_role_from_payload(self, payload, channel):
-    emoji, reacted_user, message_id = await get_reaction_info(payload)
+    emoji, reacted_user, message_id = await _get_reaction_info(self, payload)
     guild = channel.guild
     emoji = emoji.name.lower()
     role = discord.utils.get(guild.roles, name=self._roles[emoji])
@@ -127,3 +130,9 @@ async def get_on_delete_content(message):
     return f'"{message.content}"' \
             if not await is_embed(message) \
             else 'just an embed or an image.'
+
+
+async def get_reacted_user(self, payload):
+    guild = self.get_guild(payload.guild_id)
+    user = guild.get_member(payload.user_id)
+    return user
