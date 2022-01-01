@@ -39,14 +39,14 @@ class MyClient(discord.Client):
 
     async def on_ready(self):
         await on_ready_print(self)
-        _channel = None
-
-        for channel in self.get_all_channels():
-            if channel.name != 'bot':
-                _channel = channel
-
-        _roles_for_send = await get_roles_for_send(self)
-        await create_message_and_add_reactions(self, _channel, _roles_for_send)
+        # _channel = None
+        #
+        # for channel in self.get_all_channels():
+        #     if channel.name != 'bot':
+        #         _channel = channel
+        #
+        # _roles_for_send = await get_roles_for_send(self)
+        # await create_message_and_add_reactions(self, _channel, _roles_for_send)
 
     @author_is_not_bot
     @notify_if_wrong_command

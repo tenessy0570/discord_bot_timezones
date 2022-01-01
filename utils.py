@@ -82,7 +82,6 @@ async def get_message_by_id(channel, message_id):
 async def _get_reaction_info(self, payload):
     guild = self.get_guild(payload.guild_id)
     member = guild.get_member(payload.user_id)
-    print(member.name)
     return payload.emoji, member, payload.message_id
 
 
