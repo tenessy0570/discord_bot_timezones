@@ -24,7 +24,7 @@ def get_commands_from_file(filename: str) -> tuple:
 
 
 async def message_is_video_name(message):
-    return message.content.split(' ')[0] == '!song'
+    return message.content.split(' ')[0] == '!video'
 
 
 async def _get_video_name_from_message(message):
@@ -135,3 +135,7 @@ async def get_reacted_user(self, payload):
     guild = self.get_guild(payload.guild_id)
     user = guild.get_member(payload.user_id)
     return user
+
+
+async def message_is_song_name(message):
+    return message.content.split(' ')[0] == '!song'

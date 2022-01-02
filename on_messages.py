@@ -6,7 +6,7 @@ from utils import (
     get_embed,
     message_is_video_name,
     get_video_url_by_name,
-    get_on_delete_content
+    get_on_delete_content, message_is_song_name
 )
 from img_urls import good_face_url
 from decorators import (
@@ -54,6 +54,9 @@ class Messages:
 
             await message.channel.send(url)
             return
+
+        if await message_is_song_name(message):
+            pass
 
         return True
 
