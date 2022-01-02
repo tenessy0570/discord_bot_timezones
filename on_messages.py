@@ -7,8 +7,8 @@ from utils import (
     message_is_video_name,
     get_video_url_by_name,
     get_on_delete_content,
-    message_is_song_name,
-    get_song_author_and_name
+    get_song_author_and_name,
+    message_is_song_name
 )
 from img_urls import good_face_url
 from decorators import (
