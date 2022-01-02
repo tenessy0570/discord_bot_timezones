@@ -23,11 +23,11 @@ def get_commands_from_file(filename: str) -> tuple:
     return _help_commands
 
 
-async def message_is_song_name(message):
-    return message.content.split(' ')[0] == '!song'
+async def message_is_video_name(message):
+    return message.content.split(' ')[0] == '!video'
 
 
-async def _get_song_name_from_message(message):
+async def _get_video_name_from_message(message):
     parsed_msg_list = message.content.split(' ')
     song_name = ' '.join(parsed_msg_list[1:])
 
@@ -37,20 +37,20 @@ async def _get_song_name_from_message(message):
     return song_name
 
 
-async def _get_movie_id(song_name):
-    videos_search = VideosSearch(song_name, limit=1)
+async def _get_movie_id(video_name):
+    videos_search = VideosSearch(video_name, limit=1)
     return videos_search.result()['result'][0]['id']
 
 
-async def get_video_url_by_song_name(message):
+async def get_video_url_by_name(message):
     url = 'https://www.youtube.com/watch?v='
-    song_name = await _get_song_name_from_message(message)
+    video_name = await _get_video_name_from_message(message)
 
-    if not song_name:
+    if not video_name:
         raise NameError
 
     try:
-        video_id = await _get_movie_id(song_name)
+        video_id = await _get_movie_id(video_name)
     except IndexError:
         raise NameError
 
@@ -135,3 +135,25 @@ async def get_reacted_user(self, payload):
     guild = self.get_guild(payload.guild_id)
     user = guild.get_member(payload.user_id)
     return user
+
+
+async def message_is_song_name(message):
+    return message.content.split(' ')[0] == '!song'
+
+
+async def get_song_author_and_name(message):
+    song_info = ' '.join(message.content.split(' ')[1:])
+
+    if not song_info:
+        raise NameError
+
+    try:
+        song_author = song_info.split(',')[0]
+        song_name = song_info.split(',')[1]
+    except IndexError:
+        raise NameError
+
+    if not all((song_author, song_name)):
+        raise NameError
+
+    return song_author, song_name

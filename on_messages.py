@@ -4,9 +4,11 @@ from utils import (
     receive_message_then_send,
     get_commands_list_to_send,
     get_embed,
+    message_is_video_name,
+    get_video_url_by_name,
+    get_on_delete_content,
     message_is_song_name,
-    get_video_url_by_song_name,
-    get_on_delete_content
+    get_song_author_and_name
 )
 from img_urls import good_face_url
 from decorators import (
@@ -44,15 +46,26 @@ class Messages:
             await message.channel.send(embed=image_to_send)
             return
 
-        if await message_is_song_name(message):
+        if await message_is_video_name(message):
 
             try:
-                url = await get_video_url_by_song_name(message)
+                url = await get_video_url_by_name(message)
             except (NameError, HTTPException):
-                await message.channel.send('Bad song name!')
+                await message.channel.send('Bad video name!')
                 return
 
             await message.channel.send(url)
+            return
+
+        if await message_is_song_name(message):
+
+            try:
+                song_author, song_name = await get_song_author_and_name(message)
+            except NameError:
+                await message.channel.send("Wrong song author or name!")
+                return
+
+            await message.channel.send(f'Song author: "{song_author}", song name: "{song_name}"')
             return
 
         return True

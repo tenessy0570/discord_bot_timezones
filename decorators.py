@@ -10,5 +10,5 @@ def notify_if_wrong_command(func):
     async def wrapper(self, message, *args, **kwargs):
         function_return = func(self, message, *args, **kwargs)
         if await function_return:
-            await message.channel.send('I cant understand you :(\nType !help for available command list')
+            await message.channel.send("I can't understand you :(\nType !help for available command list")
     return wrapper
