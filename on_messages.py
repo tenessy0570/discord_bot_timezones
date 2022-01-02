@@ -1,3 +1,4 @@
+import discord.errors
 from discord.errors import HTTPException
 from utils import (
     in_bot_channel,
@@ -8,7 +9,8 @@ from utils import (
     get_video_url_by_name,
     get_on_delete_content,
     get_song_author_and_name,
-    message_is_song_name
+    message_is_song_name,
+    connect_to_voice_chat_and_play_source
 )
 from img_urls import good_face_url
 from decorators import (
@@ -55,6 +57,7 @@ class Messages:
                 return
 
             await message.channel.send(url)
+            await connect_to_voice_chat_and_play_source(self, message, url)
             return
 
         if await message_is_song_name(message):

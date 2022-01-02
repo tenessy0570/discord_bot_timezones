@@ -1,5 +1,15 @@
+import threading
+
+import pafy
+from asyncio import sleep
+
 import discord
 from youtubesearchpython import VideosSearch
+
+FFMPEG_OPTIONS = {
+    'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+    'options': '-vn'
+}
 
 
 async def on_ready_print(self):
@@ -157,3 +167,22 @@ async def get_song_author_and_name(message):
         raise NameError
 
     return song_author, song_name
+
+
+async def connect_to_voice_chat_and_play_source(self, message, url):
+    try:
+        voice_channel = message.author.voice.channel
+    except Exception:
+        await message.channel.send("You must be in voice chat")
+        return
+
+    client = discord.VoiceClient(client=self, channel=voice_channel)
+
+    if not client.is_connected():
+        await voice_channel.connect()
+
+    video = pafy.new(url)
+    audio = video.getbestaudio()
+    source = discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS, executable="ffmpeg/ffmpeg.exe")
+
+    client.play(source)
