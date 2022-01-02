@@ -23,11 +23,11 @@ def get_commands_from_file(filename: str) -> tuple:
     return _help_commands
 
 
-async def message_is_song_name(message):
+async def message_is_video_name(message):
     return message.content.split(' ')[0] == '!song'
 
 
-async def _get_song_name_from_message(message):
+async def _get_video_name_from_message(message):
     parsed_msg_list = message.content.split(' ')
     song_name = ' '.join(parsed_msg_list[1:])
 
@@ -37,20 +37,20 @@ async def _get_song_name_from_message(message):
     return song_name
 
 
-async def _get_movie_id(song_name):
-    videos_search = VideosSearch(song_name, limit=1)
+async def _get_movie_id(video_name):
+    videos_search = VideosSearch(video_name, limit=1)
     return videos_search.result()['result'][0]['id']
 
 
-async def get_video_url_by_song_name(message):
+async def get_video_url_by_name(message):
     url = 'https://www.youtube.com/watch?v='
-    song_name = await _get_song_name_from_message(message)
+    video_name = await _get_video_name_from_message(message)
 
-    if not song_name:
+    if not video_name:
         raise NameError
 
     try:
-        video_id = await _get_movie_id(song_name)
+        video_id = await _get_movie_id(video_name)
     except IndexError:
         raise NameError
 
