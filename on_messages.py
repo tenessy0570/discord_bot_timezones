@@ -57,6 +57,7 @@ class Messages:
                 return
 
             await message.channel.send(url)
+            # TODO already connected to voice_chat
             await connect_to_voice_chat_and_play_source(self, message, url)
             return
 
@@ -88,3 +89,4 @@ class Messages:
         await message.channel.send(
             f"{message.author.mention}'s message has just been deleted which was {message_content}"
         )
+

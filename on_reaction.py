@@ -5,7 +5,7 @@ from utils import (
     get_reacted_user
 )
 
-
+# TODO on add and on remove roles permission problem
 class Reactions:
     async def on_raw_reaction_add(self, payload):
         channel = self.get_channel(payload.channel_id)
