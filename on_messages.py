@@ -64,7 +64,7 @@ class Messages:
             try:
                 await stop_source_playing(self, message)
             except AttributeError:
-                await message.channel.send("Not playing anything.")
+                pass
 
             return
 
