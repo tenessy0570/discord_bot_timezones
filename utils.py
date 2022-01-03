@@ -1,3 +1,4 @@
+import asyncio
 import threading
 
 import pafy
@@ -151,24 +152,6 @@ async def message_is_song_name(message):
     return message.content.split(' ')[0] == '!song'
 
 
-async def get_song_author_and_name(message):
-    song_info = ' '.join(message.content.split(' ')[1:])
-
-    if not song_info:
-        raise NameError
-
-    try:
-        song_author = song_info.split(',')[0]
-        song_name = song_info.split(',')[1]
-    except IndexError:
-        raise NameError
-
-    if not all((song_author, song_name)):
-        raise NameError
-
-    return song_author, song_name
-
-
 async def connect_to_voice_chat_and_play_source(self, message, url):
     try:
         voice_channel = message.author.voice.channel
@@ -176,13 +159,39 @@ async def connect_to_voice_chat_and_play_source(self, message, url):
         await message.channel.send("You must be in voice chat")
         return
 
-    client = discord.VoiceClient(client=self, channel=voice_channel)
+    client = await _get_voice_client(self, voice_channel)
+    source = await _get_source_by_url(url)
 
-    if not client.is_connected():
-        await voice_channel.connect()
+    await _disconnect_if_connected(client)
 
+    voice_player = await voice_channel.connect()
+    voice_player.play(source)
+
+    await _disconnect_after_playing(voice_player, client)
+
+
+async def _get_source_by_url(url):
     video = pafy.new(url)
     audio = video.getbestaudio()
     source = discord.FFmpegPCMAudio(audio.url, **FFMPEG_OPTIONS, executable="ffmpeg/ffmpeg.exe")
+    return source
 
-    client.play(source)
+
+async def _disconnect_if_connected(client):
+    try:
+        await client.move_to(None)
+    except discord.errors.ClientException:
+        pass
+    else:
+        await sleep(2.0)
+
+
+async def _get_voice_client(client, voice_channel):
+    client = discord.VoiceClient(client=client, channel=voice_channel)
+    return client
+
+
+async def _disconnect_after_playing(voice_player, client):
+    while voice_player.is_playing():
+        await sleep(1.0)
+    await client.move_to(None)

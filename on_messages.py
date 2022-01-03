@@ -5,10 +5,8 @@ from utils import (
     receive_message_then_send,
     get_commands_list_to_send,
     get_embed,
-    message_is_video_name,
     get_video_url_by_name,
     get_on_delete_content,
-    get_song_author_and_name,
     message_is_song_name,
     connect_to_voice_chat_and_play_source
 )
@@ -48,31 +46,18 @@ class Messages:
             await message.channel.send(embed=image_to_send)
             return
 
-        if await message_is_video_name(message):
+        if await message_is_song_name(message):
 
             try:
                 url = await get_video_url_by_name(message)
             except (NameError, HTTPException):
-                await message.channel.send('Bad video name!')
+                await message.channel.send('Bad song name!')
                 return
 
             await message.channel.send(url)
-            # TODO already connected to voice_chat
+
             await connect_to_voice_chat_and_play_source(self, message, url)
             return
-
-        if await message_is_song_name(message):
-
-            try:
-                song_author, song_name = await get_song_author_and_name(message)
-            except NameError:
-                await message.channel.send("Wrong song author or name!")
-                return
-
-            await message.channel.send(f'Song author: "{song_author}", song name: "{song_name}"')
-            return
-
-        return True
 
     async def on_typing(self, channel, user, when):
         if not await in_bot_channel(channel=channel):
