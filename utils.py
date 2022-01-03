@@ -195,3 +195,8 @@ async def _disconnect_after_playing(voice_player, client):
     while voice_player.is_playing():
         await sleep(1.0)
     await client.move_to(None)
+
+
+async def stop_source_playing(self, message):
+    client = discord.utils.get(self.voice_clients, guild__name=message.guild.name)
+    client.stop()

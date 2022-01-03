@@ -8,7 +8,7 @@ from utils import (
     get_video_url_by_name,
     get_on_delete_content,
     message_is_song_name,
-    connect_to_voice_chat_and_play_source
+    connect_to_voice_chat_and_play_source, stop_source_playing
 )
 from img_urls import good_face_url
 from decorators import (
@@ -57,6 +57,15 @@ class Messages:
             await message.channel.send(url)
 
             await connect_to_voice_chat_and_play_source(self, message, url)
+            return
+
+        if await receive_message_then_send(message, "!stop"):
+
+            try:
+                await stop_source_playing(self, message)
+            except AttributeError:
+                await message.channel.send("Not playing anything.")
+
             return
 
     async def on_typing(self, channel, user, when):
