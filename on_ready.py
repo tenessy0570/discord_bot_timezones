@@ -17,6 +17,8 @@ class Ready:
         ":kimono:": u"\U0001F458"
     }
 
+    _pong = u"U+1F3D3"
+
     _roles = create_and_get_roles_dict(_emojis)
 
     async def on_ready(self):

@@ -1,3 +1,5 @@
+import datetime
+
 import discord.errors
 from discord.errors import HTTPException
 from utils import (
@@ -24,7 +26,13 @@ class Messages:
         if not await in_bot_channel(message=message):
             return
 
-        if await receive_message_then_send(message, "ping", "pong"):
+        if await receive_message_then_send(message, "ping"):
+            before_answer = message.created_at
+            embed = discord.Embed()
+            right_now = datetime.datetime.now()
+            ping = (right_now - before_answer).microseconds // 1000
+            embed.add_field(name="Pong! :ping_pong:", value=f"{ping} ms")
+            await message.channel.send(embed=embed)
             return
 
         if await receive_message_then_send(message, "avatar"):
