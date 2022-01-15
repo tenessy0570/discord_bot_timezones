@@ -1,5 +1,8 @@
 import datetime
 
+import wikipedia.exceptions
+
+from img_urls import good_face_url
 import discord.errors
 from discord.errors import HTTPException
 from utils import (
@@ -10,9 +13,11 @@ from utils import (
     get_video_url_by_name,
     get_on_delete_content,
     message_is_song_name,
-    connect_to_voice_chat_and_play_source, stop_source_playing
+    connect_to_voice_chat_and_play_source,
+    stop_source_playing,
+    message_is_wiki_request,
+    get_wiki_info_from_message_request
 )
-from img_urls import good_face_url
 from decorators import (
     author_is_not_bot,
     notify_if_wrong_command
@@ -54,11 +59,32 @@ class Messages:
             await message.channel.send(embed=image_to_send)
             return
 
+        if message_is_wiki_request(message):
+
+            try:
+                wiki_info = get_wiki_info_from_message_request(message)
+            except (
+                    wikipedia.exceptions.DisambiguationError,
+                    wikipedia.exceptions.PageError
+            ):
+                await message.channel.send("Please clarify what you meant (uppercase/lowercase makes sense)")
+                return
+
+            try:
+                await message.channel.send(wiki_info)
+            except HTTPException:
+                await message.channel.send("Please clarify what you meant (uppercase/lowercase makes sense)")
+
+            return
+
         if await message_is_song_name(message):
 
             try:
                 url = await get_video_url_by_name(message)
-            except (NameError, HTTPException):
+            except (
+                    NameError,
+                    HTTPException
+            ):
                 await message.channel.send('Bad song name!')
                 return
 
@@ -75,6 +101,8 @@ class Messages:
                 pass
 
             return
+
+        return 1
 
     async def on_typing(self, channel, user, when):
         if not await in_bot_channel(channel=channel):

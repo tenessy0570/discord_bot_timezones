@@ -5,6 +5,7 @@ import pafy
 from asyncio import sleep
 
 import discord
+import wikipedia
 from youtubesearchpython import VideosSearch
 
 FFMPEG_OPTIONS = {
@@ -200,3 +201,20 @@ async def _disconnect_after_playing(voice_player, client):
 async def stop_source_playing(self, message):
     client = discord.utils.get(self.voice_clients, guild__name=message.guild.name)
     client.stop()
+
+
+def message_is_wiki_request(message):
+    splitted = message.content.split(" ")
+    try:
+        return splitted[0] == "!about" and splitted[1]
+    except IndexError:
+        return False
+
+
+def get_wiki_info_from_message_request(message):
+    request = _get_request_from_message(message)
+    return wikipedia.summary(request)
+
+
+def _get_request_from_message(message):
+    return " ".join(message.content.split(" ")[1:])
