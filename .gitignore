@@ -1,4 +1,5 @@
-environment_vars.py
 bot-env/
 .idea/
 __pycache__/
+ffmpeg/
+.env
