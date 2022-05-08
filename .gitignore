@@ -1,6 +1,8 @@
 bot-env/
 .idea/
 __pycache__/
-ffmpeg/
 .env
 env/
+venv/
+.idea/
+__pycache__/
