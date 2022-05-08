@@ -12,4 +12,5 @@ class Messages:
             return
 
         if message.content.startswith('!time'):
+            await message.channel.send("Отправляю время...")
             await send_timezones_to_channel(message)
